@@ -1,0 +1,99 @@
+[[extend "layout.html"]]
+
+<style>
+  .auth-container {
+    max-width: 80%;
+    min-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+    border: 1px solid #e1e1e1;
+    border-radius: 10px;
+    padding: 20px;
+  }
+  a.button {
+      margin-left: 10px;
+  }
+</style>
+
+<!--<section class="section">-->
+<!--  [[=form]]-->
+<!--</section>-->
+
+<section class="hero is-light">
+  <div class="hero-body">
+    <div class="container">
+      <div class="columns is-centered">
+        <div class="column is-half-desktop">
+          <div class="box">
+            [[if path == 'login':]]
+                <div class="title is-2 has-text-dark">
+                    Log in
+                </div>
+                [[=form.custom.begin]]
+                <div class="column">
+                    <label>Email:</label>
+                    [[=form.custom.widgets['email'] ]]
+                </div>
+                <div class="column">
+                    <label>Password:</label>
+                    [[=form.custom.widgets['password'] ]]
+                    [[if form.errors:]]
+                        <div class="has-text-danger">
+                            [[=form.errors['password']]]
+                        </div>
+                    [[pass]]
+                    <a class="is-size-9 has-text-primary" href="[[=URL('auth/request_reset_password')]]">Forgot password?</a>
+                </div>
+                <div class="column">
+                    <button class="button is-primary is-fullwidth" onclick="this.closest('form').submit()">Log in</button>
+                </div>
+                [[=form.custom.end]]
+            [[elif path == 'register':]]
+                <div class="title is-2 has-text-dark">
+                    Register
+                </div>
+                [[=form.custom.begin]]
+                <div class="field">
+                    Email:
+                    <div class="control">
+                        [[=form.custom.widgets['email']]]
+                    </div>
+                </div>
+                <div class="field">
+                    Password:
+                    <div class="control is-password">
+                        [[=form.custom.widgets['password']]]
+                    </div>
+                </div>
+                <div class="field">
+                    Password (again):
+                    <div class="control is-password">
+                        [[=form.custom.widgets['password_again']]]
+                    </div>
+                </div>
+                <div class="field">
+                    First name:
+                    <div class="control">
+                        [[=form.custom.widgets['first_name']]]
+                    </div>
+                </div>
+                <div class="field">
+                    Last name:
+                    <div class="control">
+                        [[=form.custom.widgets['last_name']]]
+                    </div>
+                </div>
+                <p/><p/>
+                <div class="control">
+                    <button class="button is-primary is-fullwidth" onclick="this.closest('form').submit()">Register</button>
+                </div>
+                [[=form.custom.end]]
+            [[else:]]
+                [[=form]]
+            [[pass]]
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
