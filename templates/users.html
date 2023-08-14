@@ -1,5 +1,21 @@
 [[extend 'layout.html']]
-
-<div class="section">
-   [[=user_list]]
-</div>
+<style>
+   .label {font-weight: 600}
+</style>
+<section class="section">
+   [[if grid.form:]]
+   [[=grid.path]]
+      <div class="columns is-centered">
+         <div class="box column is-half-desktop">
+            <div class="column">
+               <div class="title is-2 has-text-dark">
+                  [[=title]]
+               </div>
+               [[=grid.form]]
+               </div>
+         </div>
+      </div>
+   [[else:]]
+      [[=grid.render()]]
+   [[pass]]
+</section>

@@ -31,7 +31,11 @@ from apps.scaffold_bulma_2.common import db, session, T, cache, auth, logger, au
 from py4web.utils.url_signer import URLSigner
 from apps.scaffold_bulma_2.models import get_user_email
 
+from py4web.utils.grid import Grid, GridClassStyleBulma
+from py4web.utils.form import FormStyleBulma
+
 url_signer = URLSigner(session)
+
 
 @action('index')
 @action.uses('index.html', db, auth)
@@ -39,8 +43,32 @@ def index():
     # print("User:", get_user_email())
     return dict()
 
-@action('users')
-@action.uses(db, auth, 'users.html')
-def users():
-    user_list = db(db.auth_user.id > 0).select()
-    return dict(user_list=user_list)
+
+# @action('users')
+# @action.uses(db, auth, 'users.html')
+# def users():
+#     user_list = db(db.auth_user.id > 0).select()
+#     return dict(user_list=user_list)
+
+
+@action('users', method=['POST', 'GET'])
+@action('users/<path:path>', method=['POST', 'GET'])
+@action.uses('users.html', db, auth.user)
+def index(path=None):
+    query = (db.auth_user.id > 0)
+    grid = Grid(path,
+                formstyle=FormStyleBulma,  # FormStyleDefault or FormStyleBulma
+                grid_class_style=GridClassStyleBulma,  # GridClassStyle or GridClassStyleBulma
+                query=query,
+                orderby=[db.auth_user.last_name],
+                #  search_queries=[['Search by Name', lambda val: db.person.name.contains(val)]]
+                )
+    title = ''
+    if path:
+        if path.split('/')[0] == 'details':
+            title = 'View user'
+        elif path.split('/')[0] == 'edit':
+            title = 'Edit user'
+        else:
+            title = 'New user'
+    return dict(grid=grid, title=title)
