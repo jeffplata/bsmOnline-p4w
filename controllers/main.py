@@ -33,6 +33,7 @@ from apps.scaffold_bulma_2.models import get_user_email
 
 from py4web.utils.grid import Grid, GridClassStyleBulma
 from py4web.utils.form import FormStyleBulma
+from yatl.helpers import *
 
 url_signer = URLSigner(session)
 
@@ -67,8 +68,19 @@ def index(path=None):
     if path:
         if path.split('/')[0] == 'details':
             title = 'View user'
+            e = grid.form.structure.find('.button')
+            for el in e:
+                if el['_value'] == 'Submit':
+                    el['_value'] = 'Back'
+                    el['_class'] = el['_class'] + ' is-info is-outlined'
         elif path.split('/')[0] == 'edit':
             title = 'Edit user'
+            grid.form.deletable = False
+            attrs = {
+                "_onclick": "window.history.back(); return false;",
+                "_class": "button is-info is-outlined ml-2",
+            }
+            grid.form.param.sidecar.append(A("Back", **attrs))
         else:
             title = 'New user'
     return dict(grid=grid, title=title)
