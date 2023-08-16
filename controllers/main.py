@@ -51,6 +51,8 @@ def index():
 #     user_list = db(db.auth_user.id > 0).select()
 #     return dict(user_list=user_list)
 
+TITLES = ['View user', 'Edit user', 'New user']
+
 
 @action('users', method=['POST', 'GET'])
 @action('users/<path:path>', method=['POST', 'GET'])
@@ -62,25 +64,46 @@ def index(path=None):
                 grid_class_style=GridClassStyleBulma,  # GridClassStyle or GridClassStyleBulma
                 query=query,
                 orderby=[db.auth_user.last_name],
+                auto_process=False,
                 #  search_queries=[['Search by Name', lambda val: db.person.name.contains(val)]]
                 )
-    title = ''
+    title = TITLES[0]
+    attrs = {
+        "_onclick": "window.history.back(); return false;",
+        "_class": "button is-info is-outlined ml-2",
+    }
+    grid.param.new_sidecar = A("Back", **attrs)
+    grid.param.edit_sidecar = A("Back", **attrs)
+
+    grid.process()
+
     if path:
         if path.split('/')[0] == 'details':
-            title = 'View user'
             e = grid.form.structure.find('.button')
             for el in e:
                 if el['_value'] == 'Submit':
                     el['_value'] = 'Back'
                     el['_class'] = el['_class'] + ' is-info is-outlined'
-        elif path.split('/')[0] == 'edit':
-            title = 'Edit user'
-            grid.form.deletable = False
+        else:
             attrs = {
                 "_onclick": "window.history.back(); return false;",
                 "_class": "button is-info is-outlined ml-2",
             }
-            grid.form.param.sidecar.append(A("Back", **attrs))
-        else:
-            title = 'New user'
+            grid.param.new_sidecar = A("Back", **attrs)
+            grid.param.edit_sidecar = A("Back", **attrs)
+
+            if path.split('/')[0] == 'edit':
+                title = TITLES[1]
+                grid.form.deletable = False
+            else:
+                title = TITLES[2]
+
     return dict(grid=grid, title=title)
+
+
+@action('libraries', method=['POST', 'GET'])
+@action('libraries/<path:path>', method=['POST', 'GET'])
+@action.uses(db, auth.user)
+def libraries(path=None):
+
+    return dict()

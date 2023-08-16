@@ -18,7 +18,7 @@ db.define_table(
     'region',
     Field('region_name'),
     Field('region_shortname'),
-    auth.signature
+    auth.signature,
     )
 
 

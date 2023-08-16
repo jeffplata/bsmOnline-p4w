@@ -1,37 +1,32 @@
-[[extend 'layout.html']]
-<style>
-   .label, .field-label {font-weight: 600}
-</style>
-<section class="section">
-   [[if grid.form:]]
-   [[=grid.path]]
-      <div class="columns is-centered">
-         <div class="box column is-half-desktop">
-            <div class="column">
-               <div class="title is-2 has-text-dark">
-                  [[=title]]
-               </div>
-               [[if grid.path.split('/')[0] == 'details':]]
-                  [[=grid.form.custom.begin]]
-                  [[for fn in ['email','first_name','last_name']:]]
-                     <div class="field is-horizontal">
-                        <div class="field-label">
-                           [[=grid.form.custom.labels[fn] ]]
-                        </div>
-                        <div class="field-body">
-                           [[=grid.form.custom.widgets[fn] ]]
-                        </div>
-                     </div>
-                  [[pass]]
-                  [[=grid.form.custom.submit]]
-                  [[=grid.form.custom.end]]
-               [[else:]]
-                  [[=grid.form]]
-               [[pass]]
+[[extend 'layout_ext.html']]
+
+[[if grid.form:]]
+   <div class="columns is-centered">
+      <div class="box column is-half-desktop">
+         <div class="column">
+            <div class="title is-2 has-text-dark">
+               [[=title]]
             </div>
+            [[if grid.path.split('/')[0] == 'details':]]
+               [[=grid.form.custom.begin]]
+               [[for fn in ['email','first_name','last_name']:]]
+                  <div class="field is-horizontal">
+                     <div class="field-label">
+                        [[=grid.form.custom.labels[fn] ]]
+                     </div>
+                     <div class="field-body">
+                        [[=grid.form.custom.widgets[fn] ]]
+                     </div>
+                  </div>
+               [[pass]]
+               [[=grid.form.custom.submit]]
+               [[=grid.form.custom.end]]
+            [[else:]]
+               [[=grid.form]]
+            [[pass]]
          </div>
       </div>
-   [[else:]]
-      [[=grid.render()]]
-   [[pass]]
-</section>
+   </div>
+[[else:]]
+   [[=grid.render()]]
+[[pass]]
