@@ -25,7 +25,7 @@ STATIC_FOLDER = required_folder(APP_FOLDER, "static")
 # location where to store uploaded files:
 UPLOAD_FOLDER = required_folder(APP_FOLDER, "uploads")
 
-# send email on regstration
+# send email on registration
 VERIFY_EMAIL = True
 
 # account requires to be approved ?
