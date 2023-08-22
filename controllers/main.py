@@ -55,22 +55,20 @@ def index():
 TITLES = ['View user', 'Edit user', 'New user']
 
 
-def validate_assign_password(form):
-    # if not form.errors:
-    form.vars['password'] = default_sec
-    print('form.vars', form.vars)
+def set_password(s, f):
+    # f.password = default_sec
+    print(f)
+    if session and session.get('auth_user_bu_set'):
+        db.auth_user._before_update.pop()
+        session['auth_user_bu_set'] = None
 
 
 @action('users', method=['POST', 'GET'])
 @action('users/<path:path>', method=['POST', 'GET'])
 @action.uses('users.html', db, auth.user)
 def index(path=None):
-    print(db._lastsql)
     for r in db(db.auth_user.id > 0).select():
-        print('xxxxxx', r['password'])
-    # if path and path.split('/')[0] == 'edit':
-    #     db.auth_user.password.value = default_sec
-    #     print('action is edit', db.auth_user.password.value)
+        print('* ', r['first_name'], r['password'])
 
     query = (db.auth_user.id > 0)
     grid = Grid(path,
@@ -79,7 +77,6 @@ def index(path=None):
                 query=query,
                 orderby=[db.auth_user.last_name],
                 auto_process=False,
-                validation=validate_assign_password,
                 #  search_queries=[['Search by Name', lambda val: db.person.name.contains(val)]]
                 )
     title = TITLES[0]
@@ -89,11 +86,6 @@ def index(path=None):
     }
     grid.param.new_sidecar = A("Back", **attrs)
     grid.param.edit_sidecar = A("Back", **attrs)
-
-    # if path and path.split('/')[0] == 'edit':
-    #     print('grid.form.validation = assign_password')
-    #     # grid.validation = validate_assign_password
-    #     grid.validation = validate_assign_password
 
     grid.process()
 
@@ -105,16 +97,14 @@ def index(path=None):
                     el['_value'] = 'Back'
                     el['_class'] = el['_class'] + ' is-info is-outlined'
         else:
-            # attrs = {
-            #     "_onclick": "window.history.back(); return false;",
-            #     "_class": "button is-info is-outlined ml-2",
-            # }
-            # grid.param.new_sidecar = A("Back", **attrs)
-            # grid.param.edit_sidecar = A("Back", **attrs)
-
             if path.split('/')[0] == 'edit':
                 title = TITLES[1]
                 grid.form.deletable = False
+                db.auth_user.password.writable
+
+                db.auth_user._before_update.append(lambda s, f: set_password(s, f))
+                if session:
+                    session['auth_user_bu_set'] = True
             else:
                 title = TITLES[2]
 
