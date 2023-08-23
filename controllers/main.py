@@ -55,12 +55,11 @@ def index():
 TITLES = ['View user', 'Edit user', 'New user']
 
 
-def set_password(s, f):
-    # f.password = default_sec
-    print(f)
-    if session and session.get('auth_user_bu_set'):
+def set_password(f):
+    f.password = default_sec
+    if session and session.get('auth_user_bi_set'):
         db.auth_user._before_update.pop()
-        session['auth_user_bu_set'] = None
+        session['auth_user_bi_set'] = None
 
 
 @action('users', method=['POST', 'GET'])
@@ -100,13 +99,11 @@ def index(path=None):
             if path.split('/')[0] == 'edit':
                 title = TITLES[1]
                 grid.form.deletable = False
-                db.auth_user.password.writable
-
-                db.auth_user._before_update.append(lambda s, f: set_password(s, f))
-                if session:
-                    session['auth_user_bu_set'] = True
-            else:
+            elif path.split('/')[0] == 'new':
                 title = TITLES[2]
+                db.auth_user._before_insert.append(lambda f: set_password(f))
+                if session:
+                    session['auth_user_bi_set'] = True
 
     return dict(grid=grid, title=title)
 
