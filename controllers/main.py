@@ -46,12 +46,6 @@ def index():
     return dict()
 
 
-# @action('users')
-# @action.uses(db, auth, 'users.html')
-# def users():
-#     user_list = db(db.auth_user.id > 0).select()
-#     return dict(user_list=user_list)
-
 TITLES = ['View user', 'Edit user', 'New user']
 
 
@@ -66,8 +60,6 @@ def set_password(f):
 @action('users/<path:path>', method=['POST', 'GET'])
 @action.uses('users.html', db, auth.user)
 def index(path=None):
-    for r in db(db.auth_user.id > 0).select():
-        print('* ', r['first_name'], r['password'])
 
     query = (db.auth_user.id > 0)
     grid = Grid(path,
