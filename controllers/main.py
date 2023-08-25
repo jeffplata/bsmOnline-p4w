@@ -71,12 +71,26 @@ def index(path=None):
                 #  search_queries=[['Search by Name', lambda val: db.person.name.contains(val)]]
                 )
     title = TITLES[0]
+    # attrs = {
+    #     "_onclick": "window.history.back(); return false;",
+    #     "_class": "button is-info is-outlined ml-2",
+    # }
     attrs = {
-        "_onclick": "window.history.back(); return false;",
+        "_hx-get": URL('users'),
+        "_hx-target": "#htmx-div",
         "_class": "button is-info is-outlined ml-2",
     }
     grid.param.new_sidecar = A("Back", **attrs)
     grid.param.edit_sidecar = A("Back", **attrs)
+
+    user_id = None
+    if path and len(path.split('/')) > 1:
+        user_id = path.split('/')[1]
+
+    form_attrs = {
+        "_hx-post": URL("users/%s" % user_id),
+        "_hx-target": "#htmx-div",
+    }
 
     grid.process()
 
@@ -91,6 +105,7 @@ def index(path=None):
             if path.split('/')[0] == 'edit':
                 title = TITLES[1]
                 grid.form.deletable = False
+                grid.form.structure.append(**form_attrs)
             elif path.split('/')[0] == 'new':
                 title = TITLES[2]
                 db.auth_user._before_insert.append(lambda f: set_password(f))
