@@ -1,0 +1,5 @@
+[[extend 'layout_ext.html']]
+
+<div id="htmx-div">
+   <div hx-get="[[=URL('users')]]" hx-trigger="load" hx-target="#htmx-div"></div>
+</div>

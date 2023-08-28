@@ -30,6 +30,7 @@ from yatl.helpers import A
 from apps.scaffold_bulma_2.common import db, session, T, cache, auth, logger, authenticated, unauthenticated, flash
 from py4web.utils.url_signer import URLSigner
 from apps.scaffold_bulma_2.models import get_user_email
+from py4web.utils.grid import AttributesPluginHtmx
 
 from py4web.utils.grid import Grid, GridClassStyleBulma
 from py4web.utils.form import FormStyleBulma
@@ -56,10 +57,16 @@ def set_password(f):
         session['auth_user_bi_set'] = None
 
 
+@action('users_page')
+@action.uses('users_page.html', db, auth.user)
+def users_page():
+    return dict()
+
+
 @action('users', method=['POST', 'GET'])
 @action('users/<path:path>', method=['POST', 'GET'])
 @action.uses('users.html', db, auth.user)
-def index(path=None):
+def users(path=None):
 
     query = (db.auth_user.id > 0)
     grid = Grid(path,
@@ -70,6 +77,8 @@ def index(path=None):
                 auto_process=False,
                 #  search_queries=[['Search by Name', lambda val: db.person.name.contains(val)]]
                 )
+    grid.attributes_plugin = AttributesPluginHtmx("#htmx-div")
+
     title = TITLES[0]
     # attrs = {
     #     "_onclick": "window.history.back(); return false;",
@@ -83,14 +92,14 @@ def index(path=None):
     grid.param.new_sidecar = A("Back", **attrs)
     grid.param.edit_sidecar = A("Back", **attrs)
 
-    user_id = None
-    if path and len(path.split('/')) > 1:
-        user_id = path.split('/')[1]
+    # user_id = None
+    # if path and len(path.split('/')) > 1:
+    #     user_id = path.split('/')[1]
 
-    form_attrs = {
-        "_hx-post": URL("users/%s" % user_id),
-        "_hx-target": "#htmx-div",
-    }
+    # form_attrs = {
+    #     "_hx-post": URL("users/%s" % user_id),
+    #     "_hx-target": "#htmx-div",
+    # }
 
     grid.process()
 
@@ -105,7 +114,6 @@ def index(path=None):
             if path.split('/')[0] == 'edit':
                 title = TITLES[1]
                 grid.form.deletable = False
-                grid.form.structure.append(**form_attrs)
             elif path.split('/')[0] == 'new':
                 title = TITLES[2]
                 db.auth_user._before_insert.append(lambda f: set_password(f))
