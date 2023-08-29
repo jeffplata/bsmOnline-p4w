@@ -88,6 +88,9 @@ T_FOLDER = required_folder(APP_FOLDER, "translations")
 USE_CELERY = False
 CELERY_BROKER = "redis://localhost:6379/0"
 
+
+
+
 # try import private settings
 try:
     from .settings_private import *

@@ -35,7 +35,9 @@ from py4web.utils.grid import AttributesPluginHtmx
 from py4web.utils.grid import Grid, GridClassStyleBulma
 from py4web.utils.form import FormStyleBulma
 from yatl.helpers import *
-from ..models import default_sec
+from ..models import default_sec, USER_ADAM
+
+from ..rbac import requires_permission
 
 url_signer = URLSigner(session)
 
@@ -65,7 +67,7 @@ def users_page():
 
 @action('users', method=['POST', 'GET'])
 @action('users/<path:path>', method=['POST', 'GET'])
-@action.uses('users.html', db, auth.user)
+@action.uses('users.html', db, auth.user, requires_permission('manage', 'auth_user'))
 def users(path=None):
 
     query = (db.auth_user.id > 0)
@@ -75,6 +77,7 @@ def users(path=None):
                 query=query,
                 orderby=[db.auth_user.last_name],
                 auto_process=False,
+                deletable=lambda r: r.email != USER_ADAM,
                 #  search_queries=[['Search by Name', lambda val: db.person.name.contains(val)]]
                 )
     grid.attributes_plugin = AttributesPluginHtmx("#htmx-div")
@@ -92,15 +95,6 @@ def users(path=None):
     grid.param.new_sidecar = A("Back", **attrs)
     grid.param.edit_sidecar = A("Back", **attrs)
 
-    # user_id = None
-    # if path and len(path.split('/')) > 1:
-    #     user_id = path.split('/')[1]
-
-    # form_attrs = {
-    #     "_hx-post": URL("users/%s" % user_id),
-    #     "_hx-target": "#htmx-div",
-    # }
-
     grid.process()
 
     if path:
@@ -113,6 +107,7 @@ def users(path=None):
         else:
             if path.split('/')[0] == 'edit':
                 title = TITLES[1]
+                db.auth_user.email.writable = False
                 grid.form.deletable = False
             elif path.split('/')[0] == 'new':
                 title = TITLES[2]

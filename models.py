@@ -10,6 +10,8 @@ key = ''
 DEFAULT_SEC = 'Password1'
 default_sec = str(CRYPT(key="pbkdf2(1000,20,sha512):%s" % key)(DEFAULT_SEC)[0])
 
+USER_ADAM = 'admin@email.com'
+
 
 def get_user_email():
     return auth.current_user.get('email') if auth.current_user else None
